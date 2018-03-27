@@ -3,10 +3,20 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:async';
 
 final googleSignIn = new GoogleSignIn();
 final analytics = new FirebaseAnalytics();
+// Firebase Authentication lets you require your app's users to have
+// a Google account. When a user signs in, Firebase Authentication verifies
+// the credentials from Google Sign-In and returns a response to the app.
+// Users who are signed in and authenticated can then connect to the Firebase
+// Realtime Database and exhange chat messages with other users.
+// You can apply authentication to make sure users see only messages
+// they have access to, for example, and impose other types of restrictions on
+// the contents of your database.
+final auth = FirebaseAuth.instance;
 
 final ThemeData kIOSTheme = new ThemeData(
   primarySwatch: Colors.orange,
@@ -54,12 +64,24 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   // your app will start the sign-in process by executing the signIn() method.
   Future<Null> _ensureLoggedIn() async {
     GoogleSignInAccount user = googleSignIn.currentUser;
-    if (user == null)
-      user = await googleSignIn.signInSilently();
+    if (user == null) user = await googleSignIn.signInSilently();
     if (user == null) {
       await googleSignIn.signIn();
       // Track sign in
       analytics.logLogin();
+    }
+    // checks whether currentUser is set to null. The authentication property
+    // is the user's credentials. The signInWithGoogle() method takes
+    // an idToken and an accessToken as arguments.
+    // This method is provided by the Flutter Firebase Authentication plugin.
+    // It returns a new Firebase User object named currentUser.
+    if (await auth.currentUser() == null) {
+      GoogleSignInAuthentication credentials =
+          await googleSignIn.currentUser.authentication;
+      await auth.signInWithGoogle(
+        idToken: credentials.idToken,
+        accessToken: credentials.accessToken,
+      );
     }
     return null;
   }
@@ -91,19 +113,20 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
             ),
             new Container(
               margin: new EdgeInsets.symmetric(horizontal: 4.0),
-              child: Theme.of(context).platform == TargetPlatform.iOS ?
-              new CupertinoButton(
-                child: new Text("Send"),
-                onPressed: _isComposing
-                    ? () =>  _handleSubmitted(_textController.text)
-                    : null,) :
-              new IconButton(
-                icon: new Icon(Icons.send),
-                onPressed: _isComposing
-                    ? () => _handleSubmitted(_textController.text)
-                    //  onPressed is set to null, disabling the send button
-                    : null,
-              ),
+              child: Theme.of(context).platform == TargetPlatform.iOS
+                  ? new CupertinoButton(
+                      child: new Text("Send"),
+                      onPressed: _isComposing
+                          ? () => _handleSubmitted(_textController.text)
+                          : null,
+                    )
+                  : new IconButton(
+                      icon: new Icon(Icons.send),
+                      onPressed: _isComposing
+                          ? () => _handleSubmitted(_textController.text)
+                          //  onPressed is set to null, disabling the send button
+                          : null,
+                    ),
             )
           ],
         ),
@@ -120,7 +143,7 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     _sendMessage(text: text);
   }
 
-  void _sendMessage({ String text }) {
+  void _sendMessage({String text}) {
     ChatMessage message = new ChatMessage(
       text: text,
       animationController: new AnimationController(
@@ -146,12 +169,13 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
         elevation: Theme.of(context).platform == TargetPlatform.iOS ? 0.0 : 4.0,
       ),
       body: new Container(
-          decoration: Theme.of(context).platform == TargetPlatform.iOS
-              ? new BoxDecoration(
-            border: new Border(
-              top: new BorderSide(color: Colors.grey[200]),
-            ),
-          ): null,
+        decoration: Theme.of(context).platform == TargetPlatform.iOS
+            ? new BoxDecoration(
+                border: new Border(
+                  top: new BorderSide(color: Colors.grey[200]),
+                ),
+              )
+            : null,
         child: new Column(
           children: <Widget>[
             new Flexible(
@@ -207,7 +231,8 @@ class ChatMessage extends StatelessWidget {
             new Container(
               margin: const EdgeInsets.only(right: 16.0),
               child: new CircleAvatar(
-                backgroundImage: new NetworkImage(googleSignIn.currentUser.photoUrl),
+                backgroundImage:
+                    new NetworkImage(googleSignIn.currentUser.photoUrl),
               ),
             ),
             // Expanded allows a widget like Column to impose layout
@@ -218,7 +243,8 @@ class ChatMessage extends StatelessWidget {
               child: new Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  new Text(googleSignIn.currentUser.displayName, style: Theme.of(context).textTheme.subhead),
+                  new Text(googleSignIn.currentUser.displayName,
+                      style: Theme.of(context).textTheme.subhead),
                   new Container(
                     margin: const EdgeInsets.only(top: 5.0),
                     child: new Text(text),
