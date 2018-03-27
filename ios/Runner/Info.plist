@@ -2,6 +2,22 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+
+<key>CFBundleURLTypes</key>
+  <array>
+      <dict>
+         <key>CFBundleTypeRole</key>
+         <string>Editor</string>
+         <key>CFBundleURLSchemes</key>
+         <array>
+         <!-- reverse url of your client id, for example: -->
+<string>com.googleusercontent.apps.229271861436-q3t614n0k4n17qkochvmplfhvjk25f3u</string>
+         <!-- bundle id, for example: -->
+            <string>ch.sheremet.katarina.myFriendlychat</string>
+         </array>
+      </dict>
+  </array>
+
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleExecutable</key>

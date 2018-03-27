@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'dart:async';
 
-const String _name = "Your Name";
+final googleSignIn = new GoogleSignIn();
 
 final ThemeData kIOSTheme = new ThemeData(
   primarySwatch: Colors.orange,
@@ -40,6 +42,23 @@ class ChatScreen extends StatefulWidget {
 class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   final List<ChatMessage> _messages = <ChatMessage>[];
   final TextEditingController _textController = new TextEditingController();
+
+  // The snippet uses multiple await expressions to execute
+  // Google Sign-In methods in sequence. If the value of the currentUser
+  // property is null, your app will first execute signInSilently(), get
+  // the result and store it in the user variable. The signInSilently method
+  // attempts to sign in a previously authenticated user, without interaction.
+  // After this method finishes executing, if the value of user is still null,
+  // your app will start the sign-in process by executing the signIn() method.
+  Future<Null> _ensureLoggedIn() async {
+    GoogleSignInAccount user = googleSignIn.currentUser;
+    if (user == null)
+      user = await googleSignIn.signInSilently();
+    if (user == null) {
+      await googleSignIn.signIn();
+    }
+    return null;
+  }
 
   // Variable controls the behavior and the visual appearance of the Send button.
   bool _isComposing = false;
@@ -88,11 +107,16 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     );
   }
 
-  void _handleSubmitted(String text) {
+  Future<Null> _handleSubmitted(String text) async {
     _textController.clear();
     setState(() {
       _isComposing = false;
     });
+    await _ensureLoggedIn();
+    _sendMessage(text: text);
+  }
+
+  void _sendMessage({ String text }) {
     ChatMessage message = new ChatMessage(
       text: text,
       animationController: new AnimationController(
@@ -176,7 +200,9 @@ class ChatMessage extends StatelessWidget {
           children: <Widget>[
             new Container(
               margin: const EdgeInsets.only(right: 16.0),
-              child: new CircleAvatar(child: new Text(_name[0])),
+              child: new CircleAvatar(
+                backgroundImage: new NetworkImage(googleSignIn.currentUser.photoUrl),
+              ),
             ),
             // Expanded allows a widget like Column to impose layout
             // constraints (in this case the Column's width), on a child widget.
@@ -186,7 +212,7 @@ class ChatMessage extends StatelessWidget {
               child: new Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  new Text(_name, style: Theme.of(context).textTheme.subhead),
+                  new Text(googleSignIn.currentUser.displayName, style: Theme.of(context).textTheme.subhead),
                   new Container(
                     margin: const EdgeInsets.only(top: 5.0),
                     child: new Text(text),

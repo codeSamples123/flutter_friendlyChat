@@ -1,0 +1,62 @@
+{
+  "project_info": {
+    "project_number": "229271861436",
+    "firebase_url": "https://my-firebase-futter-app.firebaseio.com",
+    "project_id": "my-firebase-futter-app",
+    "storage_bucket": "my-firebase-futter-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:229271861436:android:6b58438a4b3846eb",
+        "android_client_info": {
+          "package_name": "ch.sheremet.katarina.myfriendlychat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "229271861436-50a2r64s7ap58a23lm3hoc6b4bslvb0o.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "ch.sheremet.katarina.myfriendlychat",
+            "certificate_hash": "017c804e0e6130f4d6b9285f28bdaec37a4e9a0a"
+          }
+        },
+        {
+          "client_id": "229271861436-95ddue65v8ils9e35a6o40c60v1idi34.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAq2PaiKx3qLVga-zcGdN-X63nKDb7xu3Y"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "229271861436-95ddue65v8ils9e35a6o40c60v1idi34.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "229271861436-q3t614n0k4n17qkochvmplfhvjk25f3u.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "ch.sheremet.katarina.myFriendlychat"
+              }
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
