@@ -3,6 +3,12 @@
 <plist version="1.0">
 <dict>
 
+<!-- Enable camera -->
+<key>NSCameraUsageDescription</key>
+         <string>Share images with other chat users</string>
+         <key>NSPhotoLibraryUsageDescription</key>
+         <string>Share images with other chat users</string>
+
 <key>CFBundleURLTypes</key>
   <array>
       <dict>

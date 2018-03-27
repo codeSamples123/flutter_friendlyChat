@@ -5,6 +5,10 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:math';
+import 'dart:io';
 
 // Plugin enhances the list of chat messages
 import 'package:firebase_database/ui/firebase_animated_list.dart';
@@ -102,6 +106,24 @@ class ChatScreenState extends State<ChatScreen> {
         margin: const EdgeInsets.symmetric(horizontal: 8.0),
         child: new Row(
           children: <Widget>[
+            new Container(
+              margin: new EdgeInsets.symmetric(horizontal: 4.0),
+              child: new IconButton(
+                  icon: new Icon(Icons.photo_camera),
+                  onPressed: () async {
+                    await _ensureLoggedIn();
+                    File imageFile = await ImagePicker.pickImage();
+                    int random = new Random().nextInt(100000);
+                    StorageReference ref = FirebaseStorage.instance
+                        .ref()
+                        .child("image_$random.jpg");
+                    // Put methds takes a File object as an argument
+                    // and uploads it to a Google Cloud Storage bucket.
+                    StorageUploadTask uploadTask = ref.put(imageFile);
+                    Uri downloadUrl = (await uploadTask.future).downloadUrl;
+                    _sendMessage(imageUrl: downloadUrl.toString());
+                  }),
+            ),
             new Flexible(
               child: new TextField(
                 controller: _textController,
@@ -149,9 +171,10 @@ class ChatScreenState extends State<ChatScreen> {
     _sendMessage(text: text);
   }
 
-  void _sendMessage({String text}) {
+  void _sendMessage({String text, String imageUrl}) {
     reference.push().set({
       'text': text,
+      'imageUrl': imageUrl,
       'senderName': googleSignIn.currentUser.displayName,
       'senderPhotoUrl': googleSignIn.currentUser.photoUrl,
     });
@@ -246,7 +269,12 @@ class ChatMessage extends StatelessWidget {
                       style: Theme.of(context).textTheme.subhead),
                   new Container(
                     margin: const EdgeInsets.only(top: 5.0),
-                    child: new Text(snapshot.value['text']),
+                    child: snapshot.value['imageUrl'] != null
+                        ? new Image.network(
+                            snapshot.value['imageUrl'],
+                            width: 250.0,
+                          )
+                        : new Text(snapshot.value['text']),
                   ),
                 ],
               ),
