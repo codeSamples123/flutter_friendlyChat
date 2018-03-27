@@ -1,6 +1,7 @@
 # my_friendlychat
 
-A new Flutter project.
+It is the flutter codelabs. In the project are used: Firebase Realtime Database, Firebase Auth, Firebase Storage,
+Google Sign In.
 
 ## Flutter codelabs
 1. https://codelabs.developers.google.com/codelabs/flutter/
