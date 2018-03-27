@@ -2,7 +2,9 @@
 
 A new Flutter project.
 
-## Getting Started
+## Flutter codelabs
+
+https://codelabs.developers.google.com/codelabs/flutter-firebase/#0
 
 For help getting started with Flutter, view our online
 [documentation](https://flutter.io/).
